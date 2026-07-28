@@ -1,0 +1,20 @@
+# Build and test output
+artifacts/
+[Bb]in/
+[Oo]bj/
+TestResults/
+*.trx
+coverage.*
+
+# IDE and user-specific files
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+
+# Operating-system and crash artifacts
+.DS_Store
+Desktop.ini
+Thumbs.db
+*.stackdump

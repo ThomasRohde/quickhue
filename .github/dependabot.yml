@@ -1,0 +1,20 @@
+version: 2
+
+updates:
+  - package-ecosystem: nuget
+    directory: /src/QuickHue
+    schedule:
+      interval: monthly
+    groups:
+      nuget-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"

@@ -1,0 +1,115 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing v-prefixed tag to release
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Resolve release tag
+        id: release
+        shell: pwsh
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          $tag = if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch') {
+              $env:INPUT_TAG
+          } else {
+              $env:GITHUB_REF_NAME
+          }
+
+          if ($tag -notmatch '^v\d+\.\d+\.\d+([-.][0-9A-Za-z.-]+)?$') {
+              throw "Release tags must use semantic versioning, for example v1.0.0."
+          }
+
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "version=$($tag.Substring(1))" >> $env:GITHUB_OUTPUT
+
+      - name: Check out release tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.release.outputs.tag }}
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Restore locked dependencies
+        run: dotnet restore QuickHue.slnx --locked-mode
+
+      - name: Build
+        run: dotnet build QuickHue.slnx --configuration Release --no-restore --warnaserror
+
+      - name: Verify formatting
+        run: dotnet format QuickHue.slnx --verify-no-changes --no-restore
+
+      - name: Run tests
+        run: dotnet run --project tests\QuickHue.Tests\QuickHue.Tests.csproj --configuration Release --no-build
+
+      - name: Build release archive
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          dotnet publish src\QuickHue\QuickHue.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained false `
+            --no-restore `
+            --output artifacts\publish `
+            -p:Version=$env:RELEASE_VERSION
+
+          New-Item -ItemType Directory -Path artifacts\release -Force | Out-Null
+          New-Item -ItemType Directory -Path artifacts\package -Force | Out-Null
+          Copy-Item -LiteralPath artifacts\publish\QuickHue.exe -Destination artifacts\package
+          Copy-Item -LiteralPath LICENSE -Destination artifacts\package
+          Copy-Item -LiteralPath README.md -Destination artifacts\package
+          Copy-Item -LiteralPath THIRD_PARTY_NOTICES.md -Destination artifacts\package
+
+          $archive = "artifacts\release\QuickHue-$env:RELEASE_TAG-win-x64.zip"
+          Compress-Archive -Path artifacts\package\* -DestinationPath $archive
+
+          $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $(Split-Path -Leaf $archive)" |
+              Set-Content -LiteralPath artifacts\release\SHA256SUMS.txt -Encoding ascii
+
+      - name: Create or update GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          $assets = @(
+              "artifacts\release\QuickHue-$env:RELEASE_TAG-win-x64.zip",
+              "artifacts\release\SHA256SUMS.txt"
+          )
+
+          if (gh release view $env:RELEASE_TAG 2>$null) {
+              gh release upload $env:RELEASE_TAG @assets --clobber
+          } else {
+              gh release create $env:RELEASE_TAG @assets `
+                --title "QuickHue $env:RELEASE_TAG" `
+                --generate-notes `
+                --verify-tag
+          }

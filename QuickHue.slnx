@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/QuickHue/QuickHue.csproj" />
+  <Project Path="tests/QuickHue.Tests/QuickHue.Tests.csproj" />
+</Solution>

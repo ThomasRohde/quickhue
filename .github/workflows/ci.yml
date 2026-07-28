@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build, test, and publish
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Restore locked dependencies
+        run: dotnet restore QuickHue.slnx --locked-mode
+
+      - name: Build
+        run: dotnet build QuickHue.slnx --configuration Release --no-restore --warnaserror
+
+      - name: Verify formatting
+        run: dotnet format QuickHue.slnx --verify-no-changes --no-restore
+
+      - name: Run tests
+        run: dotnet run --project tests\QuickHue.Tests\QuickHue.Tests.csproj --configuration Release --no-build
+
+      - name: Verify single-file publish
+        shell: pwsh
+        run: |
+          dotnet publish src\QuickHue\QuickHue.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained false `
+            --no-restore `
+            --output artifacts\publish-check
+
+          $files = @(Get-ChildItem -LiteralPath artifacts\publish-check -File)
+          if ($files.Count -ne 1 -or $files[0].Name -ne 'QuickHue.exe') {
+              throw "Expected one published file named QuickHue.exe; found: $($files.Name -join ', ')"
+          }
