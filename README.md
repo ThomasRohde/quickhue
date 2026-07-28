@@ -2,6 +2,8 @@
 
 QuickHue is a small Windows 11 tray utility for switching one Philips Hue bulb as quickly as possible.
 
+![QuickHue settings window in dark mode](docs/images/quickhue-settings.png)
+
 - Press `Ctrl+Alt+L` from any application, or pick your own shortcut.
 - Left-click the tray icon.
 - Right-click for explicit On, Off, Settings, startup, and Exit actions.

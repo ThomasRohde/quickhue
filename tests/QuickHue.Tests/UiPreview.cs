@@ -176,14 +176,14 @@ internal static class UiPreview
         var draft = type.GetField("_draft", Instance)!.GetValue(form)!;
         var configType = draft.GetType();
         configType.GetProperty("BridgeId")!.SetValue(draft, "001788FFFE1A2B3C");
-        configType.GetProperty("BridgeAddress")!.SetValue(draft, "192.168.1.42");
+        configType.GetProperty("BridgeAddress")!.SetValue(draft, "192.0.2.42");
         configType.GetProperty("CertificateSha256")!.SetValue(draft, new string('a', 64));
         configType.GetProperty("ProtectedApplicationKey")!.SetValue(draft, "preview");
 
         var bridgeList = (ComboBox)type.GetField("_bridgeList", Instance)!.GetValue(form)!;
         bridgeList.Items.Clear();
         var bridgeInfo = typeof(SetupForm).Assembly.GetType("QuickHue.BridgeInfo")!;
-        bridgeList.Items.Add(Activator.CreateInstance(bridgeInfo, "001788FFFE1A2B3C", "192.168.1.42", "mDNS")!);
+        bridgeList.Items.Add(Activator.CreateInstance(bridgeInfo, "001788FFFE1A2B3C", "192.0.2.42", "mDNS")!);
         bridgeList.SelectedIndex = 0;
 
         var lightType = typeof(SetupForm).Assembly.GetType("QuickHue.HueLight")!;
