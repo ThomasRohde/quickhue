@@ -158,7 +158,9 @@ internal sealed class SetupForm : Form
             Text = "QuickHue",
             Dock = DockStyle.Fill,
             Font = Theme.Display(16F, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleLeft
+            TextAlign = ContentAlignment.MiddleLeft,
+            Margin = Padding.Empty,
+            UseCompatibleTextRendering = true
         };
         layout.Controls.Add(wordmark);
 
@@ -167,7 +169,9 @@ internal sealed class SetupForm : Form
             Text = "Your PC light,\none shortcut away.",
             Dock = DockStyle.Fill,
             Font = Theme.Text(10F),
-            TextAlign = ContentAlignment.TopLeft
+            TextAlign = ContentAlignment.TopLeft,
+            Margin = Padding.Empty,
+            UseCompatibleTextRendering = true
         };
         layout.Controls.Add(tagline);
 
@@ -177,11 +181,13 @@ internal sealed class SetupForm : Form
             Dock = DockStyle.Fill,
             Font = Theme.Text(7.5F, FontStyle.Bold),
             TextAlign = ContentAlignment.BottomLeft,
+            Margin = Padding.Empty,
             Padding = new Padding(0, 0, 0, 6)
         };
         layout.Controls.Add(stepsCaption);
 
         _steps.Dock = DockStyle.Fill;
+        _steps.Margin = Padding.Empty;
         _steps.AccessibleName = "Setup progress";
         layout.Controls.Add(_steps);
 
@@ -192,7 +198,9 @@ internal sealed class SetupForm : Form
             Text = "LOCAL ONLY\nTLS PINNED",
             Dock = DockStyle.Fill,
             Font = Theme.Mono(7.5F, FontStyle.Bold),
-            TextAlign = ContentAlignment.BottomLeft
+            TextAlign = ContentAlignment.BottomLeft,
+            Margin = Padding.Empty,
+            UseCompatibleTextRendering = true
         };
         layout.Controls.Add(trust, 0, 6);
 
@@ -255,11 +263,15 @@ internal sealed class SetupForm : Form
             ForeColor = Theme.Colors.Ink,
             Font = Theme.Display(17F, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleLeft,
+            Margin = Padding.Empty,
+            UseCompatibleTextRendering = true,
             Name = "Heading"
         });
         _subtitle.Dock = DockStyle.Fill;
         _subtitle.Font = Theme.Text(9.5F);
         _subtitle.TextAlign = ContentAlignment.TopLeft;
+        _subtitle.Margin = Padding.Empty;
+        _subtitle.UseCompatibleTextRendering = true;
         _subtitle.Padding = new Padding(0, 3, 0, 0);
         header.Controls.Add(_subtitle);
         return header;
