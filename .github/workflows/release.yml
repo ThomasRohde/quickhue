@@ -45,12 +45,12 @@ jobs:
           "version=$($tag.Substring(1))" >> $env:GITHUB_OUTPUT
 
       - name: Check out release tag
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.release.outputs.tag }}
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
