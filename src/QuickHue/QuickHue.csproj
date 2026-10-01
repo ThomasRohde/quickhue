@@ -25,6 +25,6 @@
     <InternalsVisibleTo Include="QuickHue.Tests" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="HueApi" Version="3.3.0" />
+    <PackageReference Include="HueApi" Version="3.4.0" />
   </ItemGroup>
 </Project>
