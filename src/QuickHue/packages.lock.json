@@ -4,9 +4,9 @@
     "net10.0-windows7.0": {
       "HueApi": {
         "type": "Direct",
-        "requested": "[3.3.0, )",
-        "resolved": "3.3.0",
-        "contentHash": "gEDZuribcK6QIjN8BVCNq3zs/3qXkQClz7m4C+fcwm4lHg8H0QZZ+BZGGqtqls67D8bUrJ8/aZ9O2mICRvWpgw=="
+        "requested": "[3.4.0, )",
+        "resolved": "3.4.0",
+        "contentHash": "AsWwcBp82sYr4j+wEWQ0IfE/UOuMI4XHX99YjcokXV07Ag6zzbvAidmtl/9uJAyUkfaNy/xjSJ8NRYSD/EiRmA=="
       },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
